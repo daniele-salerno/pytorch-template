@@ -16,6 +16,16 @@
             "num_workers": 2
         }
     },
+    "data_loader_test": {
+        "type": "MnistDataLoader",
+        "args":{
+            "data_dir": "test/",
+            "batch_size": 128,
+            "shuffle": false,
+            "validation_split": 0.0,
+            "num_workers": 4
+        }
+    },
     "optimizer": {
         "type": "Adam",
         "args":{

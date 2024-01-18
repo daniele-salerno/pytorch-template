@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from base import BaseModel
 
-
+# TODO: move to custom layers
 class DepthwiseSeparableConv2d(nn.Module):
     def __init__(self, in_channels=3, out_channels=10):
         super().__init__()

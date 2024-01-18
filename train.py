@@ -62,7 +62,7 @@ if __name__ == '__main__':
                       help='path to latest checkpoint (default: None)')
     args.add_argument('-d', '--device', default="single", type=str,
                       help='indices of GPUs to enable (default: single)')
-    args.add_argument('-o', '--output', default="python train.py -o DepthSepWiseNeuralNetwork_1clr_50epochs_lr01", type=str,
+    args.add_argument('-o', '--output', default=None, type=str,
                       help='output folder name, timestamp if None')
 
     # custom cli options to modify configuration from default values given in json file.

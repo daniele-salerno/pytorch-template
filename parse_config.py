@@ -28,6 +28,8 @@ class ConfigParser:
         exper_name = self.config['name']
         if run_id is None: # use timestamp as default run-id
             run_id = datetime.now().strftime(r'%m%d_%H%M%S')
+            run_id = f"{run_id}_{self._config['arch']['type']}_{self._config['trainer']['epochs']}e"
+            print(f"Results saved in folder {run_id}")
         self._save_dir = save_dir / 'models' / exper_name / run_id
         self._log_dir = save_dir / 'log' / exper_name / run_id
 
@@ -56,6 +58,7 @@ class ConfigParser:
             args.add_argument(*opt.flags, default=None, type=opt.type)
         if not isinstance(args, tuple):
             args = args.parse_args()
+            args.config = f"configs/{args.config}"
 
         if args.device is not None:
             #os.environ["CUDA_VISIBLE_DEVICES"] = args.device
