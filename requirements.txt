@@ -1,0 +1,14 @@
+torch==1.12.1
+torchvision
+ipykernel
+torchaudio
+seaborn
+requests
+psutil
+kaleido
+graphviz
+torchmetrics
+torchviz
+tqdm
+pqt5
+tensorboard>=1.14

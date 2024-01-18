@@ -1,0 +1,62 @@
+{
+    "name": "TestSignals",
+    "n_gpu": 1,
+
+    "arch": {
+        "type": "DepthSepWiseNeuralNetwork",
+        "args": {}
+    },
+    "data_loader": {
+        "type": "SignalsDataLoader",
+        "args":{
+            "data_dir": "/workspace/tf2-vehicles-classification/images/signals/dataset",
+            "batch_size": 128,
+            "shuffle": true,
+            "validation_split": 0.1,
+            "num_workers": 4
+        }
+    },
+    "data_loader_test": {
+        "type": "SignalsDataLoader",
+        "args":{
+            "data_dir": "/workspace/tf2-vehicles-classification/images/signals/nrt",
+            "batch_size": 128,
+            "shuffle": false,
+            "validation_split": 0.0,
+            "num_workers": 4
+        }
+    },
+    "optimizer": {
+        "type": "Adam",
+        "args":{
+            "lr": 0.001,
+            "weight_decay": 0,
+            "amsgrad": true
+        }
+    },
+    "loss": "nll_loss",
+    "metrics": [
+        "accuracy", "top_k_acc"
+    ],
+    "lr_scheduler": {
+        "type": "OneCycleLR",
+        "args": {
+            "max_lr": 0.01,
+            "epochs": 50,
+            "steps_per_epoch": 1
+        }
+    },
+    "trainer": {
+        "epochs": 50,
+
+        "save_dir": "saved/",
+        "save_period": 10,
+        "verbosity": 2,
+        
+        "monitor": "min val_loss",
+        "early_stop": 10,
+
+        "tensorboard": true
+    },
+    "conf_matrix": false
+}
