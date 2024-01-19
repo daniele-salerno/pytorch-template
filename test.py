@@ -5,11 +5,15 @@ import data_loader.data_loaders as module_data
 import model.loss as module_loss
 import model.metric as module_metric
 import model.model as module_arch
+from utils import init_project_mlflow, create_exp_mlflow
 from parse_config import ConfigParser
+import mlflow
 
 
 def main(config):
     logger = config.get_logger('test')
+    init_project_mlflow()
+    run_name = create_exp_mlflow(model_name=config.resume)
 
     # setup data_loader instances
     try:
@@ -68,11 +72,13 @@ def main(config):
             conf_matrix += module_metric.conf_matrix(output, target, device)
 
     n_samples = len(data_loader.sampler)
-    log = {'loss': total_loss / n_samples}
-    log.update({
+    log_metrics = {'loss': total_loss / n_samples}
+    log_metrics.update({
         met.__name__: total_metrics[i].item() / n_samples for i, met in enumerate(metric_fns)
     })
-    logger.info(log)
+    logger.info(log_metrics)
+    
+    ## config matrix ##
     try:
         config_matrix = config['conf_matrix']
         if config_matrix:
@@ -83,16 +89,35 @@ def main(config):
         else:
             logger.info("NO Confusion matrix saved")
     except:
-        logger.info("NO Confusion matrix saved")      
+        logger.info("NO Confusion matrix saved")    
+    
+    ## update mlflow server ##
+    with mlflow.start_run(run_name=run_name) as run:
+        params = {
+        "epochs": config.config["trainer"]["epochs"],
+        "arch": config.config["arch"]["type"],
+        "batch_size": config.config["data_loader"]["args"]["batch_size"],
+        "optimizer": config.config["optimizer"]["type"],
+        "loss_name": config.config["loss"],
+        "lr_scheduler": config.config["lr_scheduler"]["type"],
+        }
+        # # Log the parameters used for the model fit
+        mlflow.log_params(params)
+
+        # Log the error metrics that were calculated during validation
+        mlflow.log_metrics(log_metrics)
+
+        # Log an instance of the trained model for later use
+        mlflow.pytorch.log_model(model, "signal_model")  
 
 
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser(description='PyTorch Template')
-    args.add_argument('-c', '--config', default=None, type=str,
+    args.add_argument('-c', '--config', default="config_signals.json", type=str,
                       help='config file path (default: None)')
-    args.add_argument('-r', '--resume', default="saved/models/Signals/ConvolutionalNeuralNetwork64/checkpoint-epoch30.pth", type=str,
-                      help='path to latest checkpoint (default: None)')
+    args.add_argument('-r', '--resume', default="saved/models/TestSignals/0119_081652_DepthSepWiseNeuralNetwork_50e/model_best.pth", type=str,
+                      help='path to latest .pth checkpoint (default: None)')
     args.add_argument('-d', '--device', default="single", type=str,
                       help='indices of GPUs to enable (default: single)')
     args.add_argument('-o', '--output', default=None, type=str,

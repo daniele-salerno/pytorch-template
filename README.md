@@ -6,7 +6,6 @@ A pytorch template for deep learning experiments
 Modify the configurations in `.json` config files, then run:
 ```
 python train.py --config config_signals.json
-
 ```
 
 ### Docker image

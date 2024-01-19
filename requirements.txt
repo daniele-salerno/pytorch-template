@@ -9,7 +9,8 @@ graphviz
 torchmetrics
 torchviz
 tqdm
-numpy==1.21.5
+numpy<=1.21.5
 pandas==1.3.5
 #pqt5
 tensorboard>=1.14
+mlflow

@@ -6,6 +6,8 @@ from itertools import repeat
 from collections import OrderedDict
 import subprocess as sp
 import logger
+from mlflow import MlflowClient
+import mlflow
 import time
 
 def get_device(mode="single"):
@@ -112,3 +114,52 @@ def calculate_running_time(func):
             f"\nTempo di esecuzione per {func.__name__}:  {int(minutes)}m {int(seconds)}s")
         return result
     return wrapper
+
+## mlflow
+def init_project_mlflow(model_type="Classification"):
+    try:
+        client = MlflowClient(tracking_uri="http://172.18.0.49:5050") 
+        all_experiments = client.search_experiments()
+        print(all_experiments)
+        default_experiment = [
+            {"name": experiment.name, "lifecycle_stage": experiment.lifecycle_stage}
+            for experiment in all_experiments
+            if experiment.name == "Default"
+        ][0]
+        print(default_experiment)
+        
+        #Provide an Experiment description that will appear in the UI
+        experiment_description = (
+            f"This is the Signals {model_type} project. "
+            "This experiment contains models for Signals."
+        )
+
+        # Provide searchable tags that define characteristics of the Runs that
+        # will be in this Experiment
+        experiment_tags = {
+            "project_name": f"Signals {model_type}",
+            "store_dept": f"{model_type}",
+            "team": "ml",
+            "project_quarter": "Q3-2023",
+            "mlflow.note.content": experiment_description,
+        }
+
+        # Create the Experiment, providing a unique name
+        classification_signals_experiment = client.create_experiment(
+            name=f"Signals_{model_type}", tags=experiment_tags
+        )
+        print("MLFlow Project Created!")
+    except:
+        print("Error, MLFlow Project Already Exists!")
+
+def create_exp_mlflow(model_name, model_type="Classification"):
+    # Sets the current active experiment
+    mlflow.set_tracking_uri("http://172.18.0.49:5050")
+    semseg_barrier_experiment = mlflow.set_experiment(f"Signals_{model_type}")
+    # Define a run name for this iteration of training.
+    # If this is not set, a unique name will be auto-generated for your run.
+    run_name = str(model_name).split("/")[-2]
+
+    # Define an artifact path that the model will be saved to.
+    #artifact_path = f"barrier_{args.model}"
+    return run_name
