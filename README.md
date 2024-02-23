@@ -12,3 +12,10 @@ python train.py --config config_signals.json
 ```
 docker pull cnstark/pytorch:1.13.1-py3.9.16-cuda11.7.1-ubuntu20.04
 ```
+
+### TODO list
+
+- [x] Classification Custom
+- [ ] U-Net Semantic Segmentation
+- [ ] U-Net Depth Estimation
+- [ ] Multi Modal Segmentation + Depth
